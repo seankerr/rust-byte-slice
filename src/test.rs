@@ -658,29 +658,191 @@ fn slice_length() {
 }
 
 #[test]
+fn starts_with() {
+    let mut c = ByteStream::new(b"stream data");
+
+    assert!(bs_starts_with!(c, b"stream"));
+
+    c = ByteStream::new(b"stream data");
+
+    assert!(!bs_starts_with!(c, b"data"));
+
+    c = ByteStream::new(b"stream data");
+
+    assert!(bs_starts_with!(c, b"stream data"));
+}
+
+#[test]
 fn starts_with1() {
-    let c = ByteStream::new(b"stream data");
+    let c = ByteStream::new(b"s");
+
+    assert!(bs_starts_with!(c, b"s"));
+}
+
+#[test]
+fn starts_with2() {
+    let c = ByteStream::new(b"st");
+
+    assert!(bs_starts_with!(c, b"st"));
+}
+
+#[test]
+fn starts_with3() {
+    let c = ByteStream::new(b"str");
+
+    assert!(bs_starts_with!(c, b"str"));
+}
+
+#[test]
+fn starts_with4() {
+    let c = ByteStream::new(b"stre");
+
+    assert!(bs_starts_with!(c, b"stre"));
+}
+
+#[test]
+fn starts_with5() {
+    let c = ByteStream::new(b"strea");
+
+    assert!(bs_starts_with!(c, b"strea"));
+}
+
+#[test]
+fn starts_with6() {
+    let c = ByteStream::new(b"stream");
 
     assert!(bs_starts_with!(c, b"stream"));
 }
 
 #[test]
-fn starts_with2() {
-    let c = ByteStream::new(b"stream data");
+fn starts_with7() {
+    let c = ByteStream::new(b"stream ");
 
-    assert!(!bs_starts_with!(c, b"data"));
+    assert!(bs_starts_with!(c, b"stream "));
 }
 
 #[test]
-fn starts_with3() {
-    let c = ByteStream::new(b"");
+fn starts_with8() {
+    let c = ByteStream::new(b"stream d");
 
-    assert!(!bs_starts_with!(c, b"stream"));
+    assert!(bs_starts_with!(c, b"stream d"));
 }
 
 #[test]
-fn starts_with4() {
+fn starts_with9() {
+    let c = ByteStream::new(b"stream da");
+
+    assert!(bs_starts_with!(c, b"stream da"));
+}
+
+#[test]
+fn starts_with10() {
+    let c = ByteStream::new(b"stream dat");
+
+    assert!(bs_starts_with!(c, b"stream dat"));
+}
+
+#[test]
+fn starts_with11() {
     let c = ByteStream::new(b"stream data");
 
     assert!(bs_starts_with!(c, b"stream data"));
+}
+
+#[test]
+fn starts_with12() {
+    let c = ByteStream::new(b"stream data ");
+
+    assert!(bs_starts_with!(c, b"stream data "));
+}
+
+#[test]
+fn starts_with13() {
+    let c = ByteStream::new(b"stream data s");
+
+    assert!(bs_starts_with!(c, b"stream data s"));
+}
+
+#[test]
+fn starts_with14() {
+    let c = ByteStream::new(b"stream data st");
+
+    assert!(bs_starts_with!(c, b"stream data st"));
+}
+
+#[test]
+fn starts_with15() {
+    let c = ByteStream::new(b"stream data str");
+
+    assert!(bs_starts_with!(c, b"stream data str"));
+}
+
+#[test]
+fn starts_with16() {
+    let c = ByteStream::new(b"stream data stre");
+
+    assert!(bs_starts_with!(c, b"stream data stre"));
+}
+
+#[test]
+fn starts_with17() {
+    let c = ByteStream::new(b"stream data strea");
+
+    assert!(bs_starts_with!(c, b"stream data strea"));
+}
+
+#[test]
+fn starts_with18() {
+    let c = ByteStream::new(b"stream data stream");
+
+    assert!(bs_starts_with!(c, b"stream data stream"));
+}
+
+#[test]
+fn starts_with19() {
+    let c = ByteStream::new(b"stream data stream ");
+
+    assert!(bs_starts_with!(c, b"stream data stream "));
+}
+
+#[test]
+fn starts_with20() {
+    let c = ByteStream::new(b"stream data stream d");
+
+    assert!(bs_starts_with!(c, b"stream data stream d"));
+}
+
+#[test]
+fn starts_with21() {
+    let c = ByteStream::new(b"stream data stream da");
+
+    assert!(bs_starts_with!(c, b"stream data stream da"));
+}
+
+#[test]
+fn starts_with22() {
+    let c = ByteStream::new(b"stream data stream dat");
+
+    assert!(bs_starts_with!(c, b"stream data stream dat"));
+}
+
+#[test]
+fn starts_with23() {
+    let c = ByteStream::new(b"stream data stream data");
+
+    assert!(bs_starts_with!(c, b"stream data stream data"));
+}
+
+#[test]
+fn starts_with24() {
+    let c = ByteStream::new(b"stream data stream data ");
+
+    assert!(bs_starts_with!(c, b"stream data stream data "));
+}
+
+#[test]
+fn starts_with25() {
+    let c = ByteStream::new(b"stream data stream data s");
+
+    assert!(bs_starts_with!(c, b"stream data stream data s"));
 }

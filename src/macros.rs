@@ -143,7 +143,7 @@ macro_rules! bs_collect_length {
 
 /// Collect if `$when` yields `true`.
 ///
-/// Exit the collection loop when `$when` yields `false`.
+/// Exit the collection loop if `$when` yields `false`.
 #[macro_export]
 macro_rules! bs_collect_when {
     ($context:expr, $when:expr, $on_eos:expr) => ({
@@ -173,7 +173,7 @@ macro_rules! bs_count {
     });
 }
 
-/// Count each byte loop starting at `$context.stream_index` until end-of-stream, when `$when`
+/// Count each byte loop starting at `$context.stream_index` until end-of-stream, if `$when`
 /// yields `true`.
 #[macro_export]
 macro_rules! bs_count_when {
@@ -366,24 +366,574 @@ macro_rules! bs_slice_length {
 }
 
 /// Determine if the remaining stream starts with `$pattern`.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with {
     ($context:expr, $pattern:expr) => ({
         let mut found = false;
 
-        if $pattern.len() <= bs_available!($context) {
-            for n in 0..$pattern.len() {
-                if $context.stream[bs_index!($context) + n] != $pattern[n] {
-                    found = false;
+        for n in 0..$pattern.len() {
+            if $context.stream[bs_index!($context) + n] != $pattern[n] {
+                found = false;
 
-                    break;
-                }
-
-                found = true;
+                break;
             }
+
+            found = true;
         }
 
         found
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first byte.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with1 {
+    ($context:expr, $pattern:expr) => ({
+        $context.stream[$context.stream_index] == $pattern[0]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 2 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with2 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]     == $pattern[0]
+        && $context.stream[$context.stream_index + 1] == $pattern[1]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 3 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with3 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]     == $pattern[0]
+        && $context.stream[$context.stream_index + 1] == $pattern[1]
+        && $context.stream[$context.stream_index + 2] == $pattern[2]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 4 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with4 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]     == $pattern[0]
+        && $context.stream[$context.stream_index + 1] == $pattern[1]
+        && $context.stream[$context.stream_index + 2] == $pattern[2]
+        && $context.stream[$context.stream_index + 3] == $pattern[3]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 5 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with5 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]     == $pattern[0]
+        && $context.stream[$context.stream_index + 1] == $pattern[1]
+        && $context.stream[$context.stream_index + 2] == $pattern[2]
+        && $context.stream[$context.stream_index + 3] == $pattern[3]
+        && $context.stream[$context.stream_index + 4] == $pattern[4]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 6 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with6 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]     == $pattern[0]
+        && $context.stream[$context.stream_index + 1] == $pattern[1]
+        && $context.stream[$context.stream_index + 2] == $pattern[2]
+        && $context.stream[$context.stream_index + 3] == $pattern[3]
+        && $context.stream[$context.stream_index + 4] == $pattern[4]
+        && $context.stream[$context.stream_index + 5] == $pattern[5]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 7 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with7 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]     == $pattern[0]
+        && $context.stream[$context.stream_index + 1] == $pattern[1]
+        && $context.stream[$context.stream_index + 2] == $pattern[2]
+        && $context.stream[$context.stream_index + 3] == $pattern[3]
+        && $context.stream[$context.stream_index + 4] == $pattern[4]
+        && $context.stream[$context.stream_index + 5] == $pattern[5]
+        && $context.stream[$context.stream_index + 6] == $pattern[6]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 8 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with8 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]     == $pattern[0]
+        && $context.stream[$context.stream_index + 1] == $pattern[1]
+        && $context.stream[$context.stream_index + 2] == $pattern[2]
+        && $context.stream[$context.stream_index + 3] == $pattern[3]
+        && $context.stream[$context.stream_index + 4] == $pattern[4]
+        && $context.stream[$context.stream_index + 5] == $pattern[5]
+        && $context.stream[$context.stream_index + 6] == $pattern[6]
+        && $context.stream[$context.stream_index + 7] == $pattern[7]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 9 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with9 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]     == $pattern[0]
+        && $context.stream[$context.stream_index + 1] == $pattern[1]
+        && $context.stream[$context.stream_index + 2] == $pattern[2]
+        && $context.stream[$context.stream_index + 3] == $pattern[3]
+        && $context.stream[$context.stream_index + 4] == $pattern[4]
+        && $context.stream[$context.stream_index + 5] == $pattern[5]
+        && $context.stream[$context.stream_index + 6] == $pattern[6]
+        && $context.stream[$context.stream_index + 7] == $pattern[7]
+        && $context.stream[$context.stream_index + 8] == $pattern[8]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 10 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with10 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]     == $pattern[0]
+        && $context.stream[$context.stream_index + 1] == $pattern[1]
+        && $context.stream[$context.stream_index + 2] == $pattern[2]
+        && $context.stream[$context.stream_index + 3] == $pattern[3]
+        && $context.stream[$context.stream_index + 4] == $pattern[4]
+        && $context.stream[$context.stream_index + 5] == $pattern[5]
+        && $context.stream[$context.stream_index + 6] == $pattern[6]
+        && $context.stream[$context.stream_index + 7] == $pattern[7]
+        && $context.stream[$context.stream_index + 8] == $pattern[8]
+        && $context.stream[$context.stream_index + 9] == $pattern[9]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 11 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with11 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 12 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with12 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 13 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with13 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 14 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with14 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 15 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with15 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 16 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with16 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 17 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with17 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+        && $context.stream[$context.stream_index + 16] == $pattern[16]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 18 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with18 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+        && $context.stream[$context.stream_index + 16] == $pattern[16]
+        && $context.stream[$context.stream_index + 17] == $pattern[17]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 19 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with19 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+        && $context.stream[$context.stream_index + 16] == $pattern[16]
+        && $context.stream[$context.stream_index + 17] == $pattern[17]
+        && $context.stream[$context.stream_index + 18] == $pattern[18]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 20 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with20 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+        && $context.stream[$context.stream_index + 16] == $pattern[16]
+        && $context.stream[$context.stream_index + 17] == $pattern[17]
+        && $context.stream[$context.stream_index + 18] == $pattern[18]
+        && $context.stream[$context.stream_index + 19] == $pattern[19]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 21 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with21 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+        && $context.stream[$context.stream_index + 16] == $pattern[16]
+        && $context.stream[$context.stream_index + 17] == $pattern[17]
+        && $context.stream[$context.stream_index + 18] == $pattern[18]
+        && $context.stream[$context.stream_index + 19] == $pattern[19]
+        && $context.stream[$context.stream_index + 20] == $pattern[20]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 22 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with22 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+        && $context.stream[$context.stream_index + 16] == $pattern[16]
+        && $context.stream[$context.stream_index + 17] == $pattern[17]
+        && $context.stream[$context.stream_index + 18] == $pattern[18]
+        && $context.stream[$context.stream_index + 19] == $pattern[19]
+        && $context.stream[$context.stream_index + 20] == $pattern[20]
+        && $context.stream[$context.stream_index + 21] == $pattern[21]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 23 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with23 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+        && $context.stream[$context.stream_index + 16] == $pattern[16]
+        && $context.stream[$context.stream_index + 17] == $pattern[17]
+        && $context.stream[$context.stream_index + 18] == $pattern[18]
+        && $context.stream[$context.stream_index + 19] == $pattern[19]
+        && $context.stream[$context.stream_index + 20] == $pattern[20]
+        && $context.stream[$context.stream_index + 21] == $pattern[21]
+        && $context.stream[$context.stream_index + 22] == $pattern[22]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 24 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with24 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+        && $context.stream[$context.stream_index + 16] == $pattern[16]
+        && $context.stream[$context.stream_index + 17] == $pattern[17]
+        && $context.stream[$context.stream_index + 18] == $pattern[18]
+        && $context.stream[$context.stream_index + 19] == $pattern[19]
+        && $context.stream[$context.stream_index + 20] == $pattern[20]
+        && $context.stream[$context.stream_index + 21] == $pattern[21]
+        && $context.stream[$context.stream_index + 22] == $pattern[22]
+        && $context.stream[$context.stream_index + 23] == $pattern[23]
+    });
+}
+
+/// Determine if the remaining stream starts with `$pattern`, comparing only the first 25 bytes.
+///
+/// This macro assumes that `$pattern.len()` bytes are available for reading.
+#[macro_export]
+macro_rules! bs_starts_with25 {
+    ($context:expr, $pattern:expr) => ({
+           $context.stream[$context.stream_index]      == $pattern[0]
+        && $context.stream[$context.stream_index + 1]  == $pattern[1]
+        && $context.stream[$context.stream_index + 2]  == $pattern[2]
+        && $context.stream[$context.stream_index + 3]  == $pattern[3]
+        && $context.stream[$context.stream_index + 4]  == $pattern[4]
+        && $context.stream[$context.stream_index + 5]  == $pattern[5]
+        && $context.stream[$context.stream_index + 6]  == $pattern[6]
+        && $context.stream[$context.stream_index + 7]  == $pattern[7]
+        && $context.stream[$context.stream_index + 8]  == $pattern[8]
+        && $context.stream[$context.stream_index + 9]  == $pattern[9]
+        && $context.stream[$context.stream_index + 10] == $pattern[10]
+        && $context.stream[$context.stream_index + 11] == $pattern[11]
+        && $context.stream[$context.stream_index + 12] == $pattern[12]
+        && $context.stream[$context.stream_index + 13] == $pattern[13]
+        && $context.stream[$context.stream_index + 14] == $pattern[14]
+        && $context.stream[$context.stream_index + 15] == $pattern[15]
+        && $context.stream[$context.stream_index + 16] == $pattern[16]
+        && $context.stream[$context.stream_index + 17] == $pattern[17]
+        && $context.stream[$context.stream_index + 18] == $pattern[18]
+        && $context.stream[$context.stream_index + 19] == $pattern[19]
+        && $context.stream[$context.stream_index + 20] == $pattern[20]
+        && $context.stream[$context.stream_index + 21] == $pattern[21]
+        && $context.stream[$context.stream_index + 22] == $pattern[22]
+        && $context.stream[$context.stream_index + 23] == $pattern[23]
+        && $context.stream[$context.stream_index + 24] == $pattern[24]
     });
 }
 
