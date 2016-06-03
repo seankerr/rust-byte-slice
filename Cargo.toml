@@ -1,0 +1,11 @@
+[package]
+name        = "byte-slice"
+version     = "0.1.0"
+authors     = ["Sean Kerr <sean@code-box.org>"]
+license     = "Apache-2.0"
+description = "Byte slice manipulation macros"
+homepage    = "https://github.com/seankerr/rust-byte-slice"
+repository  = "https://github.com/seankerr/rust-byte-slice"
+readme      = "README.md"
+keywords    = ["byte", "slice"]
+exclude     = [".gitignore"]
