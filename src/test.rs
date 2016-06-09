@@ -64,11 +64,11 @@ fn collect_word() {
 }
 
 #[test]
-fn collect_digits_eos() {
+fn collect_digits8_eos() {
     let mut c = ByteStream::new(b"42");
     let mut v = 0;
 
-    bs_collect_digits!(c, v, {
+    bs_collect_digits8!(c, v, {
             assert_eq!(v, 42);
             break;
         }
@@ -76,11 +76,11 @@ fn collect_digits_eos() {
 }
 
 #[test]
-fn collect_digits_max() {
+fn collect_digits8_max() {
     let mut c = ByteStream::new(b"42");
     let mut v = 0;
 
-    bs_collect_digits!(c, v,
+    bs_collect_digits8!(c, v,
         if v > 41 {
             break;
         }, {
@@ -90,11 +90,11 @@ fn collect_digits_max() {
 }
 
 #[test]
-fn collect_digits_stop() {
+fn collect_digits8_stop() {
     let mut c = ByteStream::new(b"42stop");
     let mut v = 0;
 
-    bs_collect_digits!(c, v, {
+    bs_collect_digits8!(c, v, {
             panic!();
         }
     );
@@ -104,14 +104,185 @@ fn collect_digits_stop() {
 }
 
 #[test]
-fn collect_digits_test() {
+fn collect_digits8_test() {
     for n in 0..255 {
         if is_digit!(n) && n != b'0' {
             let a     = &[n];
             let mut c = ByteStream::new(a);
             let mut v = 0;
 
-            bs_collect_digits!(c, v, {
+            bs_collect_digits8!(c, v, {
+                    assert!(v > 0);
+                    break;
+                }
+            );
+        }
+    }
+}
+
+#[test]
+fn collect_digits16_eos() {
+    let mut c = ByteStream::new(b"42");
+    let mut v = 0;
+
+    bs_collect_digits16!(c, v, {
+            assert_eq!(v, 42);
+            break;
+        }
+    );
+}
+
+#[test]
+fn collect_digits16_max() {
+    let mut c = ByteStream::new(b"42");
+    let mut v = 0;
+
+    bs_collect_digits16!(c, v,
+        if v > 41 {
+            break;
+        }, {
+            panic!();
+        }
+    );
+}
+
+#[test]
+fn collect_digits16_stop() {
+    let mut c = ByteStream::new(b"42stop");
+    let mut v = 0;
+
+    bs_collect_digits16!(c, v, {
+            panic!();
+        }
+    );
+
+    assert_eq!(v, 42);
+    assert_eq!(c.byte, b's');
+}
+
+#[test]
+fn collect_digits16_test() {
+    for n in 0..255 {
+        if is_digit!(n) && n != b'0' {
+            let a     = &[n];
+            let mut c = ByteStream::new(a);
+            let mut v = 0;
+
+            bs_collect_digits16!(c, v, {
+                    assert!(v > 0);
+                    break;
+                }
+            );
+        }
+    }
+}
+
+#[test]
+fn collect_digits32_eos() {
+    let mut c = ByteStream::new(b"42");
+    let mut v = 0;
+
+    bs_collect_digits32!(c, v, {
+            assert_eq!(v, 42);
+            break;
+        }
+    );
+}
+
+#[test]
+fn collect_digits32_max() {
+    let mut c = ByteStream::new(b"42");
+    let mut v = 0;
+
+    bs_collect_digits32!(c, v,
+        if v > 41 {
+            break;
+        }, {
+            panic!();
+        }
+    );
+}
+
+#[test]
+fn collect_digits32_stop() {
+    let mut c = ByteStream::new(b"42stop");
+    let mut v = 0;
+
+    bs_collect_digits32!(c, v, {
+            panic!();
+        }
+    );
+
+    assert_eq!(v, 42);
+    assert_eq!(c.byte, b's');
+}
+
+#[test]
+fn collect_digits32_test() {
+    for n in 0..255 {
+        if is_digit!(n) && n != b'0' {
+            let a     = &[n];
+            let mut c = ByteStream::new(a);
+            let mut v = 0;
+
+            bs_collect_digits32!(c, v, {
+                    assert!(v > 0);
+                    break;
+                }
+            );
+        }
+    }
+}
+
+#[test]
+fn collect_digits64_eos() {
+    let mut c = ByteStream::new(b"42");
+    let mut v = 0;
+
+    bs_collect_digits64!(c, v, {
+            assert_eq!(v, 42);
+            break;
+        }
+    );
+}
+
+#[test]
+fn collect_digits64_max() {
+    let mut c = ByteStream::new(b"42");
+    let mut v = 0;
+
+    bs_collect_digits64!(c, v,
+        if v > 41 {
+            break;
+        }, {
+            panic!();
+        }
+    );
+}
+
+#[test]
+fn collect_digits64_stop() {
+    let mut c = ByteStream::new(b"42stop");
+    let mut v = 0;
+
+    bs_collect_digits64!(c, v, {
+            panic!();
+        }
+    );
+
+    assert_eq!(v, 42);
+    assert_eq!(c.byte, b's');
+}
+
+#[test]
+fn collect_digits64_test() {
+    for n in 0..255 {
+        if is_digit!(n) && n != b'0' {
+            let a     = &[n];
+            let mut c = ByteStream::new(a);
+            let mut v = 0;
+
+            bs_collect_digits64!(c, v, {
                     assert!(v > 0);
                     break;
                 }
