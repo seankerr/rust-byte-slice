@@ -43,13 +43,115 @@ macro_rules! bs_collect {
     });
 }
 
+/// Collect all sequential digit bytes into `$var` (u8), and convert them into an unsigned integer.
+/// If `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
+/// execute `$on_eos`.
+///
+/// Exit the collection loop upon locating a non-digit byte.
+#[macro_export]
+macro_rules! bs_collect_digits8 {
+    ($context:expr, $var:expr, $on_byte:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if is_digit!($context.byte) {
+                $var *= 10;
+                $var += $context.byte - b'0';
+
+                $on_byte
+            } else {
+                break;
+            },
+            $on_eos
+        );
+    });
+
+    ($context:expr, $var:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if is_digit!($context.byte) {
+                $var *= 10;
+                $var += $context.byte - b'0';
+            } else {
+                break;
+            },
+            $on_eos
+        );
+    });
+}
+
+/// Collect all sequential digit bytes into `$var` (u16), and convert them into an unsigned integer.
+/// If `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
+/// execute `$on_eos`.
+///
+/// Exit the collection loop upon locating a non-digit byte.
+#[macro_export]
+macro_rules! bs_collect_digits16 {
+    ($context:expr, $var:expr, $on_byte:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if is_digit!($context.byte) {
+                $var *= 10;
+                $var += ($context.byte - b'0') as u16;
+
+                $on_byte
+            } else {
+                break;
+            },
+            $on_eos
+        );
+    });
+
+    ($context:expr, $var:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if is_digit!($context.byte) {
+                $var *= 10;
+                $var += ($context.byte - b'0') as u16;
+            } else {
+                break;
+            },
+            $on_eos
+        );
+    });
+}
+
+/// Collect all sequential digit bytes into `$var` (u32), and convert them into an unsigned integer.
+/// If `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
+/// execute `$on_eos`.
+///
+/// Exit the collection loop upon locating a non-digit byte.
+#[macro_export]
+macro_rules! bs_collect_digits32 {
+    ($context:expr, $var:expr, $on_byte:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if is_digit!($context.byte) {
+                $var *= 10;
+                $var += ($context.byte - b'0') as u32;
+
+                $on_byte
+            } else {
+                break;
+            },
+            $on_eos
+        );
+    });
+
+    ($context:expr, $var:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if is_digit!($context.byte) {
+                $var *= 10;
+                $var += ($context.byte - b'0') as u32;
+            } else {
+                break;
+            },
+            $on_eos
+        );
+    });
+}
+
 /// Collect all sequential digit bytes into `$var` (u64), and convert them into an unsigned integer.
 /// If `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
 /// execute `$on_eos`.
 ///
 /// Exit the collection loop upon locating a non-digit byte.
 #[macro_export]
-macro_rules! bs_collect_digits {
+macro_rules! bs_collect_digits64 {
     ($context:expr, $var:expr, $on_byte:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
