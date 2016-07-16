@@ -418,6 +418,14 @@ macro_rules! bs_peek {
     );
 }
 
+/// Retrieve the remaining available bytes.
+#[macro_export]
+macro_rules! bs_remaining {
+    ($context:expr) => (
+        &$context.stream[bs_index!($context)..]
+    );
+}
+
 /// Replay the most recent byte, but do not change the current `$context.byte`.
 #[macro_export]
 macro_rules! bs_replay {

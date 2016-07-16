@@ -710,6 +710,37 @@ fn peek() {
 }
 
 #[test]
+fn remaining() {
+    let mut c = ByteStream::new(b"stream");
+
+    assert_eq!(bs_remaining!(c), b"stream");
+
+    bs_next!(c);
+
+    assert_eq!(bs_remaining!(c), b"tream");
+
+    bs_next!(c);
+
+    assert_eq!(bs_remaining!(c), b"ream");
+
+    bs_next!(c);
+
+    assert_eq!(bs_remaining!(c), b"eam");
+
+    bs_next!(c);
+
+    assert_eq!(bs_remaining!(c), b"am");
+
+    bs_next!(c);
+
+    assert_eq!(bs_remaining!(c), b"m");
+
+    bs_next!(c);
+
+    assert_eq!(bs_remaining!(c), b"");
+}
+
+#[test]
 fn replay() {
     let mut c = ByteStream::new(b"stream");
 
