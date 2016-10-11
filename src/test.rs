@@ -378,6 +378,22 @@ fn collect_length_check() {
 }
 
 #[test]
+fn collect_not_when() {
+    let mut c = ByteStream::new(b"stream data");
+
+    bs_collect_not_when!(c,
+        !is_alpha!(c.byte),
+        {
+            break;
+        }
+    );
+
+    assert_eq!(c.byte, b' ');
+    assert_eq!(bs_slice!(c), b"stream ");
+    assert_eq!(bs_slice_ignore!(c), b"stream");
+}
+
+#[test]
 fn collect_when() {
     let mut c = ByteStream::new(b"stream data");
 

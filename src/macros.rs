@@ -243,6 +243,21 @@ macro_rules! bs_collect_length {
     });
 }
 
+/// Collect if `$when` yields `false`.
+///
+/// Exit the collection loop if `$when` yields `true`.
+#[macro_export]
+macro_rules! bs_collect_not_when {
+    ($context:expr, $when:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if $when {
+                break;
+            },
+            $on_eos
+        );
+    });
+}
+
 /// Collect if `$when` yields `true`.
 ///
 /// Exit the collection loop if `$when` yields `false`.
