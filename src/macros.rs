@@ -348,8 +348,8 @@ macro_rules! bs_find_pattern {
         if bs_index!($context) + $start < $context.stream.len() {
             'outer:
             for s in bs_index!($context) + $start..$context.stream.len() {
-                for p in 0..$pattern.len() {
-                    if $context.stream.len() <= s + p || $pattern[p] != $context.stream[s + p] {
+                for (p, byte) in $pattern.iter().enumerate() {
+                    if $context.stream.len() <= s + p || *byte != $context.stream[s + p] {
                         break;
                     } else if $pattern.len() == p + 1 {
                         index = Some(s);
@@ -498,8 +498,8 @@ macro_rules! bs_starts_with {
     ($context:expr, $pattern:expr) => ({
         let mut found = false;
 
-        for n in 0..$pattern.len() {
-            if $context.stream[bs_index!($context) + n] != $pattern[n] {
+        for (n, byte) in $pattern.iter().enumerate() {
+            if $context.stream[bs_index!($context) + n] != *byte {
                 found = false;
 
                 break;
