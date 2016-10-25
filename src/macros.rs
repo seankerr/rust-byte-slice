@@ -45,18 +45,24 @@ macro_rules! bs_collect {
 
 /// Collect all sequential digit bytes into `$var` (u8), and convert them into an unsigned integer.
 /// If `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
-/// execute `$on_eos`.
+/// execute `$on_eos`. If an overflow would occur, execute `$on_overflow`.
 ///
 /// Exit the collection loop upon locating a non-digit byte.
 #[macro_export]
 macro_rules! bs_collect_digits8 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
-                $var *= 10;
-                $var += $context.byte - b'0';
-
-                $on_byte
+                if let Some(value) = ($var as u8).checked_mul(10) {
+                    if let Some(value) = value.checked_add($context.byte - b'0') {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow;
+                    }
+                } else {
+                    $on_overflow;
+                }
             } else {
                 break;
             },
@@ -64,11 +70,18 @@ macro_rules! bs_collect_digits8 {
         );
     });
 
-    ($context:expr, $var:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
-                $var *= 10;
-                $var += $context.byte - b'0';
+                if let Some(value) = ($var as u8).checked_mul(10) {
+                    if let Some(value) = value.checked_add($context.byte - b'0') {
+                        $var = value;
+                    } else {
+                        $on_overflow;
+                    }
+                } else {
+                    $on_overflow;
+                }
             } else {
                 break;
             },
@@ -79,18 +92,24 @@ macro_rules! bs_collect_digits8 {
 
 /// Collect all sequential digit bytes into `$var` (u16), and convert them into an unsigned integer.
 /// If `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
-/// execute `$on_eos`.
+/// execute `$on_eos`. If an overflow would occur, execute `$on_overflow`.
 ///
 /// Exit the collection loop upon locating a non-digit byte.
 #[macro_export]
 macro_rules! bs_collect_digits16 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
-                $var *= 10;
-                $var += ($context.byte - b'0') as u16;
-
-                $on_byte
+                if let Some(value) = ($var as u16).checked_mul(10) {
+                    if let Some(value) = value.checked_add(($context.byte - b'0') as u16) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
             } else {
                 break;
             },
@@ -98,11 +117,18 @@ macro_rules! bs_collect_digits16 {
         );
     });
 
-    ($context:expr, $var:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
-                $var *= 10;
-                $var += ($context.byte - b'0') as u16;
+                if let Some(value) = ($var as u16).checked_mul(10) {
+                    if let Some(value) = value.checked_add(($context.byte - b'0') as u16) {
+                        $var = value;
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
             } else {
                 break;
             },
@@ -113,18 +139,24 @@ macro_rules! bs_collect_digits16 {
 
 /// Collect all sequential digit bytes into `$var` (u32), and convert them into an unsigned integer.
 /// If `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
-/// execute `$on_eos`.
+/// execute `$on_eos`. If an overflow would occur, execute `$on_overflow`.
 ///
 /// Exit the collection loop upon locating a non-digit byte.
 #[macro_export]
 macro_rules! bs_collect_digits32 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
-                $var *= 10;
-                $var += ($context.byte - b'0') as u32;
-
-                $on_byte
+                if let Some(value) = ($var as u32).checked_mul(10) {
+                    if let Some(value) = value.checked_add(($context.byte - b'0') as u32) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
             } else {
                 break;
             },
@@ -132,11 +164,18 @@ macro_rules! bs_collect_digits32 {
         );
     });
 
-    ($context:expr, $var:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
-                $var *= 10;
-                $var += ($context.byte - b'0') as u32;
+                if let Some(value) = ($var as u32).checked_mul(10) {
+                    if let Some(value) = value.checked_add(($context.byte - b'0') as u32) {
+                        $var = value;
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
             } else {
                 break;
             },
@@ -147,18 +186,24 @@ macro_rules! bs_collect_digits32 {
 
 /// Collect all sequential digit bytes into `$var` (u64), and convert them into an unsigned integer.
 /// If `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
-/// execute `$on_eos`.
+/// execute `$on_eos`. If an overflow would occur, execute `$on_overflow`.
 ///
 /// Exit the collection loop upon locating a non-digit byte.
 #[macro_export]
 macro_rules! bs_collect_digits64 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
-                $var *= 10;
-                $var += ($context.byte - b'0') as u64;
-
-                $on_byte
+                if let Some(value) = ($var as u64).checked_mul(10) {
+                    if let Some(value) = value.checked_add(($context.byte - b'0') as u64) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
             } else {
                 break;
             },
@@ -166,11 +211,18 @@ macro_rules! bs_collect_digits64 {
         );
     });
 
-    ($context:expr, $var:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
-                $var *= 10;
-                $var += ($context.byte - b'0') as u64;
+                if let Some(value) = ($var as u64).checked_mul(10) {
+                    if let Some(value) = value.checked_add(($context.byte - b'0') as u64) {
+                        $var = value;
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
             } else {
                 break;
             },
