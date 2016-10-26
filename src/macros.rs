@@ -233,28 +233,49 @@ macro_rules! bs_collect_digits64 {
 
 /// Collect all sequential hex bytes into `$var` (u64), and convert them into an unsigned integer. If
 /// `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
-/// execute `$on_eos`.
+/// execute `$on_eos`. If an overflow would occur, execute `$on_overflow`.
 ///
 /// Exit the collection loop upon locating a non-hex byte.
 #[macro_export]
 macro_rules! bs_collect_hex {
-    ($context:expr, $var:expr, $on_byte:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
-            if $context.byte > 0x2F && $context.byte < 0x3A {
-                $var <<= 4;
-                $var  |= ($context.byte - 0x30) as u64;
-
-                $on_byte
-            } else if $context.byte > 0x40 && $context.byte < 0x47 {
-                $var <<= 4;
-                $var  |= ($context.byte - 0x37) as u64;
-
-                $on_byte
+            if $context.byte > b'/' && $context.byte < b':' {
+                // digit
+                if let Some(value) = ($var as u64).checked_mul(16) {
+                    if let Some(value) = value.checked_add(($context.byte - b'0') as u64) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else if $context.byte > b'@' && $context.byte < b'G' {
+                // A-F
+                if let Some(value) = ($var as u64).checked_mul(16) {
+                    if let Some(value) = value.checked_add(($context.byte - b'7') as u64) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
             } else if $context.byte > 0x60 && $context.byte < 0x67 {
-                $var <<= 4;
-                $var  |= ($context.byte - 0x57) as u64;
-
-                $on_byte
+                // a-f
+                if let Some(value) = ($var as u64).checked_mul(16) {
+                    if let Some(value) = value.checked_add(($context.byte - b'W') as u64) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
             } else {
                 break;
             },
@@ -262,8 +283,8 @@ macro_rules! bs_collect_hex {
         );
     });
 
-    ($context:expr, $var:expr, $on_eos:expr) => ({
-        bs_collect_hex!($context, $var, {}, $on_eos)
+    ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_hex!($context, $var, {}, $on_overflow, $on_eos)
     });
 }
 

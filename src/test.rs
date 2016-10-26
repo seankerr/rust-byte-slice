@@ -296,10 +296,7 @@ fn collect_hex() {
     let mut c = ByteStream::new(b"AbC1f3");
     let mut v = 0;
 
-    bs_collect_hex!(c, v, {
-            break;
-        }
-    );
+    bs_collect_hex!(c, v, break, break);
 
     assert_eq!(v, 0xABC1F3);
 }
@@ -309,10 +306,7 @@ fn collect_hex_break() {
     let mut c = ByteStream::new(b"AbC1f3Q");
     let mut v = 0;
 
-    bs_collect_hex!(c, v, {
-            break;
-        }
-    );
+    bs_collect_hex!(c, v, break, break);
 
     assert_eq!(v, 0xABC1F3);
     assert_eq!(c.byte, b'Q');
@@ -326,9 +320,8 @@ fn collect_hex_max() {
     bs_collect_hex!(c, v,
         if v > 0xABC {
             break;
-        }, {
-            panic!();
-        }
+        },
+        break, panic!()
     );
 
     assert_eq!(v, 0xABC1);
@@ -343,7 +336,7 @@ fn collect_hex_test() {
             let mut c = ByteStream::new(a);
             let mut v = 0;
 
-            bs_collect_hex!(c, v, {
+            bs_collect_hex!(c, v, break, {
                     assert!(v > 0);
                     break;
                 }
