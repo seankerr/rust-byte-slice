@@ -8,7 +8,7 @@ This module provides macros that assist with manipulation of byte slices.
 
 ## API Documentation
 
-http://metatomic.org/docs/api/byte_slice/index.html
+http://metatomic.io/docs/api/byte_slice/index.html
 
 ## Real World Examples
 
