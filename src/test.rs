@@ -292,32 +292,194 @@ fn collect_digits64_test() {
 }
 
 #[test]
-fn collect_hex() {
+fn collect_hex8() {
+    let mut c = ByteStream::new(b"FF");
+    let mut v = 0;
+
+    bs_collect_hex8!(c, v, break, break);
+
+    assert_eq!(v, 0xFF);
+}
+
+#[test]
+fn collect_hex8_break() {
+    let mut c = ByteStream::new(b"AQ");
+    let mut v = 0;
+
+    bs_collect_hex8!(c, v, break, break);
+
+    assert_eq!(v, 0xA);
+    assert_eq!(c.byte, b'Q');
+}
+
+#[test]
+fn collect_hex8_max() {
+    let mut c = ByteStream::new(b"AB1");
+    let mut v = 0;
+
+    bs_collect_hex8!(c, v,
+        if v > 0xA {
+            break;
+        },
+        break, panic!()
+    );
+
+    assert_eq!(v, 0xAB);
+    assert_eq!(c.byte, b'B');
+}
+
+#[test]
+fn collect_hex8_test() {
+    for n in 0..255 {
+        if is_hex!(n) && n != b'0' {
+            let a     = &[n];
+            let mut c = ByteStream::new(a);
+            let mut v = 0;
+
+            bs_collect_hex8!(c, v, break, {
+                    assert!(v > 0);
+                    break;
+                }
+            );
+        }
+    }
+}
+
+#[test]
+fn collect_hex16() {
+    let mut c = ByteStream::new(b"FFFF");
+    let mut v = 0;
+
+    bs_collect_hex16!(c, v, break, break);
+
+    assert_eq!(v, 0xFFFF);
+}
+
+#[test]
+fn collect_hex16_break() {
+    let mut c = ByteStream::new(b"AAAQ");
+    let mut v = 0;
+
+    bs_collect_hex16!(c, v, break, break);
+
+    assert_eq!(v, 0xAAA);
+    assert_eq!(c.byte, b'Q');
+}
+
+#[test]
+fn collect_hex16_max() {
+    let mut c = ByteStream::new(b"ABAB1");
+    let mut v = 0;
+
+    bs_collect_hex16!(c, v,
+        if v > 0xABA {
+            break;
+        },
+        break, panic!()
+    );
+
+    assert_eq!(v, 0xABAB);
+    assert_eq!(c.byte, b'B');
+}
+
+#[test]
+fn collect_hex16_test() {
+    for n in 0..255 {
+        if is_hex!(n) && n != b'0' {
+            let a     = &[n];
+            let mut c = ByteStream::new(a);
+            let mut v = 0;
+
+            bs_collect_hex16!(c, v, break, {
+                    assert!(v > 0);
+                    break;
+                }
+            );
+        }
+    }
+}
+
+#[test]
+fn collect_hex32() {
+    let mut c = ByteStream::new(b"FFFFFFFF");
+    let mut v = 0;
+
+    bs_collect_hex32!(c, v, break, break);
+
+    assert_eq!(v, 0xFFFFFFFF);
+}
+
+#[test]
+fn collect_hex32_break() {
+    let mut c = ByteStream::new(b"AAAAAAAQ");
+    let mut v = 0;
+
+    bs_collect_hex32!(c, v, break, break);
+
+    assert_eq!(v, 0xAAAAAAA);
+    assert_eq!(c.byte, b'Q');
+}
+
+#[test]
+fn collect_hex32_max() {
+    let mut c = ByteStream::new(b"ABABABAB1");
+    let mut v = 0;
+
+    bs_collect_hex32!(c, v,
+        if v > 0xABABABA {
+            break;
+        },
+        break, panic!()
+    );
+
+    assert_eq!(v, 0xABABABAB);
+    assert_eq!(c.byte, b'B');
+}
+
+#[test]
+fn collect_hex32_test() {
+    for n in 0..255 {
+        if is_hex!(n) && n != b'0' {
+            let a     = &[n];
+            let mut c = ByteStream::new(a);
+            let mut v = 0;
+
+            bs_collect_hex32!(c, v, break, {
+                    assert!(v > 0);
+                    break;
+                }
+            );
+        }
+    }
+}
+
+#[test]
+fn collect_hex64() {
     let mut c = ByteStream::new(b"AbC1f3");
     let mut v = 0;
 
-    bs_collect_hex!(c, v, break, break);
+    bs_collect_hex64!(c, v, break, break);
 
     assert_eq!(v, 0xABC1F3);
 }
 
 #[test]
-fn collect_hex_break() {
+fn collect_hex64_break() {
     let mut c = ByteStream::new(b"AbC1f3Q");
     let mut v = 0;
 
-    bs_collect_hex!(c, v, break, break);
+    bs_collect_hex64!(c, v, break, break);
 
     assert_eq!(v, 0xABC1F3);
     assert_eq!(c.byte, b'Q');
 }
 
 #[test]
-fn collect_hex_max() {
+fn collect_hex64_max() {
     let mut c = ByteStream::new(b"AbC1f3Q");
     let mut v = 0;
 
-    bs_collect_hex!(c, v,
+    bs_collect_hex64!(c, v,
         if v > 0xABC {
             break;
         },
@@ -329,14 +491,14 @@ fn collect_hex_max() {
 }
 
 #[test]
-fn collect_hex_test() {
+fn collect_hex64_test() {
     for n in 0..255 {
         if is_hex!(n) && n != b'0' {
             let a     = &[n];
             let mut c = ByteStream::new(a);
             let mut v = 0;
 
-            bs_collect_hex!(c, v, break, {
+            bs_collect_hex64!(c, v, break, {
                     assert!(v > 0);
                     break;
                 }

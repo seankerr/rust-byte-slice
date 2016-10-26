@@ -231,13 +231,184 @@ macro_rules! bs_collect_digits64 {
     });
 }
 
+/// Collect all sequential hex bytes into `$var` (u8), and convert them into an unsigned integer. If
+/// `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
+/// execute `$on_eos`. If an overflow would occur, execute `$on_overflow`.
+///
+/// Exit the collection loop upon locating a non-hex byte.
+#[macro_export]
+macro_rules! bs_collect_hex8 {
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if $context.byte > b'/' && $context.byte < b':' {
+                // digit
+                if let Some(value) = ($var as u8).checked_mul(16) {
+                    if let Some(value) = value.checked_add($context.byte - b'0') {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else if $context.byte > b'@' && $context.byte < b'G' {
+                // A-F
+                if let Some(value) = ($var as u8).checked_mul(16) {
+                    if let Some(value) = value.checked_add($context.byte - b'7') {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else if $context.byte > 0x60 && $context.byte < 0x67 {
+                // a-f
+                if let Some(value) = ($var as u8).checked_mul(16) {
+                    if let Some(value) = value.checked_add($context.byte - b'W') {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else {
+                break;
+            },
+            $on_eos
+        );
+    });
+
+    ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_hex8!($context, $var, {}, $on_overflow, $on_eos)
+    });
+}
+
+/// Collect all sequential hex bytes into `$var` (u16), and convert them into an unsigned integer. If
+/// `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
+/// execute `$on_eos`. If an overflow would occur, execute `$on_overflow`.
+///
+/// Exit the collection loop upon locating a non-hex byte.
+#[macro_export]
+macro_rules! bs_collect_hex16 {
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if $context.byte > b'/' && $context.byte < b':' {
+                // digit
+                if let Some(value) = ($var as u16).checked_mul(16) {
+                    if let Some(value) = value.checked_add(($context.byte - b'0') as u16) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else if $context.byte > b'@' && $context.byte < b'G' {
+                // A-F
+                if let Some(value) = ($var as u16).checked_mul(16) {
+                    if let Some(value) = value.checked_add(($context.byte - b'7') as u16) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else if $context.byte > 0x60 && $context.byte < 0x67 {
+                // a-f
+                if let Some(value) = ($var as u16).checked_mul(16) {
+                    if let Some(value) = value.checked_add(($context.byte - b'W') as u16) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else {
+                break;
+            },
+            $on_eos
+        );
+    });
+
+    ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_hex16!($context, $var, {}, $on_overflow, $on_eos)
+    });
+}
+
+/// Collect all sequential hex bytes into `$var` (u32), and convert them into an unsigned integer. If
+/// `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
+/// execute `$on_eos`. If an overflow would occur, execute `$on_overflow`.
+///
+/// Exit the collection loop upon locating a non-hex byte.
+#[macro_export]
+macro_rules! bs_collect_hex32 {
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect!($context,
+            if $context.byte > b'/' && $context.byte < b':' {
+                // digit
+                if let Some(value) = ($var as u32).checked_mul(16) {
+                    if let Some(value) = value.checked_add(($context.byte - b'0') as u32) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else if $context.byte > b'@' && $context.byte < b'G' {
+                // A-F
+                if let Some(value) = ($var as u32).checked_mul(16) {
+                    if let Some(value) = value.checked_add(($context.byte - b'7') as u32) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else if $context.byte > 0x60 && $context.byte < 0x67 {
+                // a-f
+                if let Some(value) = ($var as u32).checked_mul(16) {
+                    if let Some(value) = value.checked_add(($context.byte - b'W') as u32) {
+                        $var = value;
+                        $on_byte
+                    } else {
+                        $on_overflow
+                    }
+                } else {
+                    $on_overflow
+                }
+            } else {
+                break;
+            },
+            $on_eos
+        );
+    });
+
+    ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_hex32!($context, $var, {}, $on_overflow, $on_eos)
+    });
+}
+
 /// Collect all sequential hex bytes into `$var` (u64), and convert them into an unsigned integer. If
 /// `$on_byte` is supplied, for each new byte execute `$on_byte`. Upon locating end-of-stream
 /// execute `$on_eos`. If an overflow would occur, execute `$on_overflow`.
 ///
 /// Exit the collection loop upon locating a non-hex byte.
 #[macro_export]
-macro_rules! bs_collect_hex {
+macro_rules! bs_collect_hex64 {
     ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
         bs_collect!($context,
             if $context.byte > b'/' && $context.byte < b':' {
@@ -284,7 +455,7 @@ macro_rules! bs_collect_hex {
     });
 
     ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
-        bs_collect_hex!($context, $var, {}, $on_overflow, $on_eos)
+        bs_collect_hex64!($context, $var, {}, $on_overflow, $on_eos)
     });
 }
 
