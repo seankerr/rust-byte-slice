@@ -50,12 +50,12 @@ macro_rules! bs_collect {
 /// Exit the collection loop upon locating a non-digit byte.
 #[macro_export]
 macro_rules! bs_collect_digits8 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr, $ty:ty) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
                 if let Some(value) = ($var as u8).checked_mul(10) {
                     if let Some(value) = value.checked_add($context.byte - b'0') {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow;
@@ -70,23 +70,12 @@ macro_rules! bs_collect_digits8 {
         );
     });
 
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_digits8!($context, $var, $on_byte, $on_overflow, $on_eos, u8);
+    });
+
     ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
-        bs_collect!($context,
-            if is_digit!($context.byte) {
-                if let Some(value) = ($var as u8).checked_mul(10) {
-                    if let Some(value) = value.checked_add($context.byte - b'0') {
-                        $var = value;
-                    } else {
-                        $on_overflow;
-                    }
-                } else {
-                    $on_overflow;
-                }
-            } else {
-                break;
-            },
-            $on_eos
-        );
+        bs_collect_digits8!($context, $var, {}, $on_overflow, $on_eos, u8);
     });
 }
 
@@ -97,12 +86,12 @@ macro_rules! bs_collect_digits8 {
 /// Exit the collection loop upon locating a non-digit byte.
 #[macro_export]
 macro_rules! bs_collect_digits16 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr, $ty:ty) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
                 if let Some(value) = ($var as u16).checked_mul(10) {
                     if let Some(value) = value.checked_add(($context.byte - b'0') as u16) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -117,23 +106,12 @@ macro_rules! bs_collect_digits16 {
         );
     });
 
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_digits16!($context, $var, $on_byte, $on_overflow, $on_eos, u16);
+    });
+
     ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
-        bs_collect!($context,
-            if is_digit!($context.byte) {
-                if let Some(value) = ($var as u16).checked_mul(10) {
-                    if let Some(value) = value.checked_add(($context.byte - b'0') as u16) {
-                        $var = value;
-                    } else {
-                        $on_overflow
-                    }
-                } else {
-                    $on_overflow
-                }
-            } else {
-                break;
-            },
-            $on_eos
-        );
+        bs_collect_digits16!($context, $var, {}, $on_overflow, $on_eos, u16);
     });
 }
 
@@ -144,12 +122,12 @@ macro_rules! bs_collect_digits16 {
 /// Exit the collection loop upon locating a non-digit byte.
 #[macro_export]
 macro_rules! bs_collect_digits32 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr, $ty:ty) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
                 if let Some(value) = ($var as u32).checked_mul(10) {
                     if let Some(value) = value.checked_add(($context.byte - b'0') as u32) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -164,23 +142,12 @@ macro_rules! bs_collect_digits32 {
         );
     });
 
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_digits32!($context, $var, $on_byte, $on_overflow, $on_eos, u32);
+    });
+
     ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
-        bs_collect!($context,
-            if is_digit!($context.byte) {
-                if let Some(value) = ($var as u32).checked_mul(10) {
-                    if let Some(value) = value.checked_add(($context.byte - b'0') as u32) {
-                        $var = value;
-                    } else {
-                        $on_overflow
-                    }
-                } else {
-                    $on_overflow
-                }
-            } else {
-                break;
-            },
-            $on_eos
-        );
+        bs_collect_digits32!($context, $var, {}, $on_overflow, $on_eos, u32);
     });
 }
 
@@ -191,12 +158,12 @@ macro_rules! bs_collect_digits32 {
 /// Exit the collection loop upon locating a non-digit byte.
 #[macro_export]
 macro_rules! bs_collect_digits64 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr, $ty:ty) => ({
         bs_collect!($context,
             if is_digit!($context.byte) {
                 if let Some(value) = ($var as u64).checked_mul(10) {
                     if let Some(value) = value.checked_add(($context.byte - b'0') as u64) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -211,23 +178,12 @@ macro_rules! bs_collect_digits64 {
         );
     });
 
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_digits64!($context, $var, $on_byte, $on_overflow, $on_eos, u64);
+    });
+
     ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
-        bs_collect!($context,
-            if is_digit!($context.byte) {
-                if let Some(value) = ($var as u64).checked_mul(10) {
-                    if let Some(value) = value.checked_add(($context.byte - b'0') as u64) {
-                        $var = value;
-                    } else {
-                        $on_overflow
-                    }
-                } else {
-                    $on_overflow
-                }
-            } else {
-                break;
-            },
-            $on_eos
-        );
+        bs_collect_digits64!($context, $var, {}, $on_overflow, $on_eos, u64);
     });
 }
 
@@ -238,13 +194,13 @@ macro_rules! bs_collect_digits64 {
 /// Exit the collection loop upon locating a non-hex byte.
 #[macro_export]
 macro_rules! bs_collect_hex8 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr, $ty:ty) => ({
         bs_collect!($context,
             if $context.byte > b'/' && $context.byte < b':' {
                 // digit
                 if let Some(value) = ($var as u8).checked_mul(16) {
                     if let Some(value) = value.checked_add($context.byte - b'0') {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -256,7 +212,7 @@ macro_rules! bs_collect_hex8 {
                 // A-F
                 if let Some(value) = ($var as u8).checked_mul(16) {
                     if let Some(value) = value.checked_add($context.byte - b'7') {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -268,7 +224,7 @@ macro_rules! bs_collect_hex8 {
                 // a-f
                 if let Some(value) = ($var as u8).checked_mul(16) {
                     if let Some(value) = value.checked_add($context.byte - b'W') {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -283,8 +239,12 @@ macro_rules! bs_collect_hex8 {
         );
     });
 
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_hex8!($context, $var, $on_byte, $on_overflow, $on_eos, u8)
+    });
+
     ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
-        bs_collect_hex8!($context, $var, {}, $on_overflow, $on_eos)
+        bs_collect_hex8!($context, $var, {}, $on_overflow, $on_eos, u8)
     });
 }
 
@@ -295,13 +255,13 @@ macro_rules! bs_collect_hex8 {
 /// Exit the collection loop upon locating a non-hex byte.
 #[macro_export]
 macro_rules! bs_collect_hex16 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr, $ty:ty) => ({
         bs_collect!($context,
             if $context.byte > b'/' && $context.byte < b':' {
                 // digit
                 if let Some(value) = ($var as u16).checked_mul(16) {
                     if let Some(value) = value.checked_add(($context.byte - b'0') as u16) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -313,7 +273,7 @@ macro_rules! bs_collect_hex16 {
                 // A-F
                 if let Some(value) = ($var as u16).checked_mul(16) {
                     if let Some(value) = value.checked_add(($context.byte - b'7') as u16) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -325,7 +285,7 @@ macro_rules! bs_collect_hex16 {
                 // a-f
                 if let Some(value) = ($var as u16).checked_mul(16) {
                     if let Some(value) = value.checked_add(($context.byte - b'W') as u16) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -340,8 +300,12 @@ macro_rules! bs_collect_hex16 {
         );
     });
 
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_hex16!($context, $var, $on_byte, $on_overflow, $on_eos, u16)
+    });
+
     ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
-        bs_collect_hex16!($context, $var, {}, $on_overflow, $on_eos)
+        bs_collect_hex16!($context, $var, {}, $on_overflow, $on_eos, u16)
     });
 }
 
@@ -352,13 +316,13 @@ macro_rules! bs_collect_hex16 {
 /// Exit the collection loop upon locating a non-hex byte.
 #[macro_export]
 macro_rules! bs_collect_hex32 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr, $ty:ty) => ({
         bs_collect!($context,
             if $context.byte > b'/' && $context.byte < b':' {
                 // digit
                 if let Some(value) = ($var as u32).checked_mul(16) {
                     if let Some(value) = value.checked_add(($context.byte - b'0') as u32) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -370,7 +334,7 @@ macro_rules! bs_collect_hex32 {
                 // A-F
                 if let Some(value) = ($var as u32).checked_mul(16) {
                     if let Some(value) = value.checked_add(($context.byte - b'7') as u32) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -382,7 +346,7 @@ macro_rules! bs_collect_hex32 {
                 // a-f
                 if let Some(value) = ($var as u32).checked_mul(16) {
                     if let Some(value) = value.checked_add(($context.byte - b'W') as u32) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -397,8 +361,12 @@ macro_rules! bs_collect_hex32 {
         );
     });
 
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_hex32!($context, $var, $on_byte, $on_overflow, $on_eos, u32)
+    });
+
     ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
-        bs_collect_hex32!($context, $var, {}, $on_overflow, $on_eos)
+        bs_collect_hex32!($context, $var, {}, $on_overflow, $on_eos, u32)
     });
 }
 
@@ -409,13 +377,13 @@ macro_rules! bs_collect_hex32 {
 /// Exit the collection loop upon locating a non-hex byte.
 #[macro_export]
 macro_rules! bs_collect_hex64 {
-    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr, $ty:ty) => ({
         bs_collect!($context,
             if $context.byte > b'/' && $context.byte < b':' {
                 // digit
                 if let Some(value) = ($var as u64).checked_mul(16) {
                     if let Some(value) = value.checked_add(($context.byte - b'0') as u64) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -427,7 +395,7 @@ macro_rules! bs_collect_hex64 {
                 // A-F
                 if let Some(value) = ($var as u64).checked_mul(16) {
                     if let Some(value) = value.checked_add(($context.byte - b'7') as u64) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -439,7 +407,7 @@ macro_rules! bs_collect_hex64 {
                 // a-f
                 if let Some(value) = ($var as u64).checked_mul(16) {
                     if let Some(value) = value.checked_add(($context.byte - b'W') as u64) {
-                        $var = value;
+                        $var = value as $ty;
                         $on_byte
                     } else {
                         $on_overflow
@@ -454,8 +422,12 @@ macro_rules! bs_collect_hex64 {
         );
     });
 
+    ($context:expr, $var:expr, $on_byte:expr, $on_overflow:expr, $on_eos:expr) => ({
+        bs_collect_hex64!($context, $var, $on_byte, $on_overflow, $on_eos, u64)
+    });
+
     ($context:expr, $var:expr, $on_overflow:expr, $on_eos:expr) => ({
-        bs_collect_hex64!($context, $var, {}, $on_overflow, $on_eos)
+        bs_collect_hex64!($context, $var, {}, $on_overflow, $on_eos, u64)
     });
 }
 
