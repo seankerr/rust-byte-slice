@@ -451,11 +451,7 @@ macro_rules! bs_collect_length {
     });
 
     ($context:expr, $length:expr) => ({
-        if bs_available!($context) >= $length {
-            $context.stream_index += $length;
-        } else {
-            $context.stream_index = $context.stream.len();
-        }
+        $context.stream_index += $length;
     });
 }
 
