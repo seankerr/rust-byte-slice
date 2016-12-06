@@ -1,5 +1,5 @@
-*.swp
-
 target
 target-install
+
 Cargo.lock
+*.swp
