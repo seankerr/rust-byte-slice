@@ -630,7 +630,10 @@ macro_rules! bs_mark {
 #[macro_export]
 macro_rules! bs_next {
     ($context:expr) => ({
-        $context.byte          = $context.stream[bs_index!($context)];
+        $context.byte = unsafe {
+            *$context.stream.get_unchecked(bs_index!($context))
+        };
+
         $context.stream_index += 1;
     });
 }
@@ -708,19 +711,7 @@ macro_rules! bs_slice_length {
 #[macro_export]
 macro_rules! bs_starts_with {
     ($context:expr, $pattern:expr) => ({
-        let mut found = false;
-
-        for (n, byte) in $pattern.iter().enumerate() {
-            if $context.stream[bs_index!($context) + n] != *byte {
-                found = false;
-
-                break;
-            }
-
-            found = true;
-        }
-
-        found
+        &$context.stream[$context.stream_index..$context.stream_index+$pattern.len()] == $pattern
     });
 }
 
@@ -729,8 +720,8 @@ macro_rules! bs_starts_with {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with1 {
-    ($context:expr, $pattern:expr) => ({
-        $context.stream[$context.stream_index] == $pattern[0]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index) == $pattern.get_unchecked(0)
     });
 }
 
@@ -739,9 +730,10 @@ macro_rules! bs_starts_with1 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with2 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]     == $pattern[0]
-        && $context.stream[$context.stream_index + 1] == $pattern[1]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)
+        == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1) == $pattern.get_unchecked(1)
     });
 }
 
@@ -750,10 +742,10 @@ macro_rules! bs_starts_with2 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with3 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]     == $pattern[0]
-        && $context.stream[$context.stream_index + 1] == $pattern[1]
-        && $context.stream[$context.stream_index + 2] == $pattern[2]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)     == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1) == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2) == $pattern.get_unchecked(2)
     });
 }
 
@@ -762,11 +754,11 @@ macro_rules! bs_starts_with3 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with4 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]     == $pattern[0]
-        && $context.stream[$context.stream_index + 1] == $pattern[1]
-        && $context.stream[$context.stream_index + 2] == $pattern[2]
-        && $context.stream[$context.stream_index + 3] == $pattern[3]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)     == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1) == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2) == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3) == $pattern.get_unchecked(3)
     });
 }
 
@@ -775,12 +767,12 @@ macro_rules! bs_starts_with4 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with5 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]     == $pattern[0]
-        && $context.stream[$context.stream_index + 1] == $pattern[1]
-        && $context.stream[$context.stream_index + 2] == $pattern[2]
-        && $context.stream[$context.stream_index + 3] == $pattern[3]
-        && $context.stream[$context.stream_index + 4] == $pattern[4]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)     == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1) == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2) == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3) == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4) == $pattern.get_unchecked(4)
     });
 }
 
@@ -789,13 +781,13 @@ macro_rules! bs_starts_with5 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with6 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]     == $pattern[0]
-        && $context.stream[$context.stream_index + 1] == $pattern[1]
-        && $context.stream[$context.stream_index + 2] == $pattern[2]
-        && $context.stream[$context.stream_index + 3] == $pattern[3]
-        && $context.stream[$context.stream_index + 4] == $pattern[4]
-        && $context.stream[$context.stream_index + 5] == $pattern[5]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)     == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1) == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2) == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3) == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4) == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5) == $pattern.get_unchecked(5)
     });
 }
 
@@ -804,14 +796,14 @@ macro_rules! bs_starts_with6 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with7 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]     == $pattern[0]
-        && $context.stream[$context.stream_index + 1] == $pattern[1]
-        && $context.stream[$context.stream_index + 2] == $pattern[2]
-        && $context.stream[$context.stream_index + 3] == $pattern[3]
-        && $context.stream[$context.stream_index + 4] == $pattern[4]
-        && $context.stream[$context.stream_index + 5] == $pattern[5]
-        && $context.stream[$context.stream_index + 6] == $pattern[6]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)     == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1) == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2) == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3) == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4) == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5) == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6) == $pattern.get_unchecked(6)
     });
 }
 
@@ -820,15 +812,15 @@ macro_rules! bs_starts_with7 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with8 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]     == $pattern[0]
-        && $context.stream[$context.stream_index + 1] == $pattern[1]
-        && $context.stream[$context.stream_index + 2] == $pattern[2]
-        && $context.stream[$context.stream_index + 3] == $pattern[3]
-        && $context.stream[$context.stream_index + 4] == $pattern[4]
-        && $context.stream[$context.stream_index + 5] == $pattern[5]
-        && $context.stream[$context.stream_index + 6] == $pattern[6]
-        && $context.stream[$context.stream_index + 7] == $pattern[7]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)     == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1) == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2) == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3) == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4) == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5) == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6) == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7) == $pattern.get_unchecked(7)
     });
 }
 
@@ -837,16 +829,16 @@ macro_rules! bs_starts_with8 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with9 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]     == $pattern[0]
-        && $context.stream[$context.stream_index + 1] == $pattern[1]
-        && $context.stream[$context.stream_index + 2] == $pattern[2]
-        && $context.stream[$context.stream_index + 3] == $pattern[3]
-        && $context.stream[$context.stream_index + 4] == $pattern[4]
-        && $context.stream[$context.stream_index + 5] == $pattern[5]
-        && $context.stream[$context.stream_index + 6] == $pattern[6]
-        && $context.stream[$context.stream_index + 7] == $pattern[7]
-        && $context.stream[$context.stream_index + 8] == $pattern[8]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)     == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1) == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2) == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3) == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4) == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5) == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6) == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7) == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8) == $pattern.get_unchecked(8)
     });
 }
 
@@ -855,17 +847,17 @@ macro_rules! bs_starts_with9 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with10 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]     == $pattern[0]
-        && $context.stream[$context.stream_index + 1] == $pattern[1]
-        && $context.stream[$context.stream_index + 2] == $pattern[2]
-        && $context.stream[$context.stream_index + 3] == $pattern[3]
-        && $context.stream[$context.stream_index + 4] == $pattern[4]
-        && $context.stream[$context.stream_index + 5] == $pattern[5]
-        && $context.stream[$context.stream_index + 6] == $pattern[6]
-        && $context.stream[$context.stream_index + 7] == $pattern[7]
-        && $context.stream[$context.stream_index + 8] == $pattern[8]
-        && $context.stream[$context.stream_index + 9] == $pattern[9]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)     == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1) == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2) == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3) == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4) == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5) == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6) == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7) == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8) == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9) == $pattern.get_unchecked(9)
     });
 }
 
@@ -874,18 +866,18 @@ macro_rules! bs_starts_with10 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with11 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
     });
 }
 
@@ -894,19 +886,19 @@ macro_rules! bs_starts_with11 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with12 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
     });
 }
 
@@ -915,20 +907,20 @@ macro_rules! bs_starts_with12 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with13 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
     });
 }
 
@@ -937,21 +929,21 @@ macro_rules! bs_starts_with13 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with14 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
     });
 }
 
@@ -960,22 +952,22 @@ macro_rules! bs_starts_with14 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with15 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
     });
 }
 
@@ -984,23 +976,23 @@ macro_rules! bs_starts_with15 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with16 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
     });
 }
 
@@ -1009,24 +1001,24 @@ macro_rules! bs_starts_with16 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with17 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
-        && $context.stream[$context.stream_index + 16] == $pattern[16]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
+        && $context.stream.get_unchecked($context.stream_index + 16) == $pattern.get_unchecked(16)
     });
 }
 
@@ -1035,25 +1027,25 @@ macro_rules! bs_starts_with17 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with18 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
-        && $context.stream[$context.stream_index + 16] == $pattern[16]
-        && $context.stream[$context.stream_index + 17] == $pattern[17]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
+        && $context.stream.get_unchecked($context.stream_index + 16) == $pattern.get_unchecked(16)
+        && $context.stream.get_unchecked($context.stream_index + 17) == $pattern.get_unchecked(17)
     });
 }
 
@@ -1062,26 +1054,26 @@ macro_rules! bs_starts_with18 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with19 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
-        && $context.stream[$context.stream_index + 16] == $pattern[16]
-        && $context.stream[$context.stream_index + 17] == $pattern[17]
-        && $context.stream[$context.stream_index + 18] == $pattern[18]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
+        && $context.stream.get_unchecked($context.stream_index + 16) == $pattern.get_unchecked(16)
+        && $context.stream.get_unchecked($context.stream_index + 17) == $pattern.get_unchecked(17)
+        && $context.stream.get_unchecked($context.stream_index + 18) == $pattern.get_unchecked(18)
     });
 }
 
@@ -1090,27 +1082,27 @@ macro_rules! bs_starts_with19 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with20 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
-        && $context.stream[$context.stream_index + 16] == $pattern[16]
-        && $context.stream[$context.stream_index + 17] == $pattern[17]
-        && $context.stream[$context.stream_index + 18] == $pattern[18]
-        && $context.stream[$context.stream_index + 19] == $pattern[19]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
+        && $context.stream.get_unchecked($context.stream_index + 16) == $pattern.get_unchecked(16)
+        && $context.stream.get_unchecked($context.stream_index + 17) == $pattern.get_unchecked(17)
+        && $context.stream.get_unchecked($context.stream_index + 18) == $pattern.get_unchecked(18)
+        && $context.stream.get_unchecked($context.stream_index + 19) == $pattern.get_unchecked(19)
     });
 }
 
@@ -1119,28 +1111,28 @@ macro_rules! bs_starts_with20 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with21 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
-        && $context.stream[$context.stream_index + 16] == $pattern[16]
-        && $context.stream[$context.stream_index + 17] == $pattern[17]
-        && $context.stream[$context.stream_index + 18] == $pattern[18]
-        && $context.stream[$context.stream_index + 19] == $pattern[19]
-        && $context.stream[$context.stream_index + 20] == $pattern[20]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
+        && $context.stream.get_unchecked($context.stream_index + 16) == $pattern.get_unchecked(16)
+        && $context.stream.get_unchecked($context.stream_index + 17) == $pattern.get_unchecked(17)
+        && $context.stream.get_unchecked($context.stream_index + 18) == $pattern.get_unchecked(18)
+        && $context.stream.get_unchecked($context.stream_index + 19) == $pattern.get_unchecked(19)
+        && $context.stream.get_unchecked($context.stream_index + 20) == $pattern.get_unchecked(20)
     });
 }
 
@@ -1149,29 +1141,29 @@ macro_rules! bs_starts_with21 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with22 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
-        && $context.stream[$context.stream_index + 16] == $pattern[16]
-        && $context.stream[$context.stream_index + 17] == $pattern[17]
-        && $context.stream[$context.stream_index + 18] == $pattern[18]
-        && $context.stream[$context.stream_index + 19] == $pattern[19]
-        && $context.stream[$context.stream_index + 20] == $pattern[20]
-        && $context.stream[$context.stream_index + 21] == $pattern[21]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
+        && $context.stream.get_unchecked($context.stream_index + 16) == $pattern.get_unchecked(16)
+        && $context.stream.get_unchecked($context.stream_index + 17) == $pattern.get_unchecked(17)
+        && $context.stream.get_unchecked($context.stream_index + 18) == $pattern.get_unchecked(18)
+        && $context.stream.get_unchecked($context.stream_index + 19) == $pattern.get_unchecked(19)
+        && $context.stream.get_unchecked($context.stream_index + 20) == $pattern.get_unchecked(20)
+        && $context.stream.get_unchecked($context.stream_index + 21) == $pattern.get_unchecked(21)
     });
 }
 
@@ -1180,30 +1172,30 @@ macro_rules! bs_starts_with22 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with23 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
-        && $context.stream[$context.stream_index + 16] == $pattern[16]
-        && $context.stream[$context.stream_index + 17] == $pattern[17]
-        && $context.stream[$context.stream_index + 18] == $pattern[18]
-        && $context.stream[$context.stream_index + 19] == $pattern[19]
-        && $context.stream[$context.stream_index + 20] == $pattern[20]
-        && $context.stream[$context.stream_index + 21] == $pattern[21]
-        && $context.stream[$context.stream_index + 22] == $pattern[22]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
+        && $context.stream.get_unchecked($context.stream_index + 16) == $pattern.get_unchecked(16)
+        && $context.stream.get_unchecked($context.stream_index + 17) == $pattern.get_unchecked(17)
+        && $context.stream.get_unchecked($context.stream_index + 18) == $pattern.get_unchecked(18)
+        && $context.stream.get_unchecked($context.stream_index + 19) == $pattern.get_unchecked(19)
+        && $context.stream.get_unchecked($context.stream_index + 20) == $pattern.get_unchecked(20)
+        && $context.stream.get_unchecked($context.stream_index + 21) == $pattern.get_unchecked(21)
+        && $context.stream.get_unchecked($context.stream_index + 22) == $pattern.get_unchecked(22)
     });
 }
 
@@ -1212,31 +1204,31 @@ macro_rules! bs_starts_with23 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with24 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
-        && $context.stream[$context.stream_index + 16] == $pattern[16]
-        && $context.stream[$context.stream_index + 17] == $pattern[17]
-        && $context.stream[$context.stream_index + 18] == $pattern[18]
-        && $context.stream[$context.stream_index + 19] == $pattern[19]
-        && $context.stream[$context.stream_index + 20] == $pattern[20]
-        && $context.stream[$context.stream_index + 21] == $pattern[21]
-        && $context.stream[$context.stream_index + 22] == $pattern[22]
-        && $context.stream[$context.stream_index + 23] == $pattern[23]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
+        && $context.stream.get_unchecked($context.stream_index + 16) == $pattern.get_unchecked(16)
+        && $context.stream.get_unchecked($context.stream_index + 17) == $pattern.get_unchecked(17)
+        && $context.stream.get_unchecked($context.stream_index + 18) == $pattern.get_unchecked(18)
+        && $context.stream.get_unchecked($context.stream_index + 19) == $pattern.get_unchecked(19)
+        && $context.stream.get_unchecked($context.stream_index + 20) == $pattern.get_unchecked(20)
+        && $context.stream.get_unchecked($context.stream_index + 21) == $pattern.get_unchecked(21)
+        && $context.stream.get_unchecked($context.stream_index + 22) == $pattern.get_unchecked(22)
+        && $context.stream.get_unchecked($context.stream_index + 23) == $pattern.get_unchecked(23)
     });
 }
 
@@ -1245,32 +1237,32 @@ macro_rules! bs_starts_with24 {
 /// This macro assumes that `$pattern.len()` bytes are available for reading.
 #[macro_export]
 macro_rules! bs_starts_with25 {
-    ($context:expr, $pattern:expr) => ({
-           $context.stream[$context.stream_index]      == $pattern[0]
-        && $context.stream[$context.stream_index + 1]  == $pattern[1]
-        && $context.stream[$context.stream_index + 2]  == $pattern[2]
-        && $context.stream[$context.stream_index + 3]  == $pattern[3]
-        && $context.stream[$context.stream_index + 4]  == $pattern[4]
-        && $context.stream[$context.stream_index + 5]  == $pattern[5]
-        && $context.stream[$context.stream_index + 6]  == $pattern[6]
-        && $context.stream[$context.stream_index + 7]  == $pattern[7]
-        && $context.stream[$context.stream_index + 8]  == $pattern[8]
-        && $context.stream[$context.stream_index + 9]  == $pattern[9]
-        && $context.stream[$context.stream_index + 10] == $pattern[10]
-        && $context.stream[$context.stream_index + 11] == $pattern[11]
-        && $context.stream[$context.stream_index + 12] == $pattern[12]
-        && $context.stream[$context.stream_index + 13] == $pattern[13]
-        && $context.stream[$context.stream_index + 14] == $pattern[14]
-        && $context.stream[$context.stream_index + 15] == $pattern[15]
-        && $context.stream[$context.stream_index + 16] == $pattern[16]
-        && $context.stream[$context.stream_index + 17] == $pattern[17]
-        && $context.stream[$context.stream_index + 18] == $pattern[18]
-        && $context.stream[$context.stream_index + 19] == $pattern[19]
-        && $context.stream[$context.stream_index + 20] == $pattern[20]
-        && $context.stream[$context.stream_index + 21] == $pattern[21]
-        && $context.stream[$context.stream_index + 22] == $pattern[22]
-        && $context.stream[$context.stream_index + 23] == $pattern[23]
-        && $context.stream[$context.stream_index + 24] == $pattern[24]
+    ($context:expr, $pattern:expr) => (unsafe {
+           $context.stream.get_unchecked($context.stream_index)      == $pattern.get_unchecked(0)
+        && $context.stream.get_unchecked($context.stream_index + 1)  == $pattern.get_unchecked(1)
+        && $context.stream.get_unchecked($context.stream_index + 2)  == $pattern.get_unchecked(2)
+        && $context.stream.get_unchecked($context.stream_index + 3)  == $pattern.get_unchecked(3)
+        && $context.stream.get_unchecked($context.stream_index + 4)  == $pattern.get_unchecked(4)
+        && $context.stream.get_unchecked($context.stream_index + 5)  == $pattern.get_unchecked(5)
+        && $context.stream.get_unchecked($context.stream_index + 6)  == $pattern.get_unchecked(6)
+        && $context.stream.get_unchecked($context.stream_index + 7)  == $pattern.get_unchecked(7)
+        && $context.stream.get_unchecked($context.stream_index + 8)  == $pattern.get_unchecked(8)
+        && $context.stream.get_unchecked($context.stream_index + 9)  == $pattern.get_unchecked(9)
+        && $context.stream.get_unchecked($context.stream_index + 10) == $pattern.get_unchecked(10)
+        && $context.stream.get_unchecked($context.stream_index + 11) == $pattern.get_unchecked(11)
+        && $context.stream.get_unchecked($context.stream_index + 12) == $pattern.get_unchecked(12)
+        && $context.stream.get_unchecked($context.stream_index + 13) == $pattern.get_unchecked(13)
+        && $context.stream.get_unchecked($context.stream_index + 14) == $pattern.get_unchecked(14)
+        && $context.stream.get_unchecked($context.stream_index + 15) == $pattern.get_unchecked(15)
+        && $context.stream.get_unchecked($context.stream_index + 16) == $pattern.get_unchecked(16)
+        && $context.stream.get_unchecked($context.stream_index + 17) == $pattern.get_unchecked(17)
+        && $context.stream.get_unchecked($context.stream_index + 18) == $pattern.get_unchecked(18)
+        && $context.stream.get_unchecked($context.stream_index + 19) == $pattern.get_unchecked(19)
+        && $context.stream.get_unchecked($context.stream_index + 20) == $pattern.get_unchecked(20)
+        && $context.stream.get_unchecked($context.stream_index + 21) == $pattern.get_unchecked(21)
+        && $context.stream.get_unchecked($context.stream_index + 22) == $pattern.get_unchecked(22)
+        && $context.stream.get_unchecked($context.stream_index + 23) == $pattern.get_unchecked(23)
+        && $context.stream.get_unchecked($context.stream_index + 24) == $pattern.get_unchecked(24)
     });
 }
 

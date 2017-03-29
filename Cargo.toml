@@ -1,6 +1,6 @@
 [package]
 name        = "byte-slice"
-version     = "0.1.11"
+version     = "0.1.12"
 authors     = ["Sean Kerr <sean@metatomic.io>"]
 license     = "Apache-2.0"
 description = "Byte slice manipulation macros"

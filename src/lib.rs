@@ -50,10 +50,12 @@ pub struct ByteStream<'a> {
 impl<'a> ByteStream<'a> {
     /// Create a new `ByteStream`.
     pub fn new(stream: &'a [u8]) -> ByteStream<'a> {
-        ByteStream{ byte:         0,
-                 mark_index:   0,
-                 stream:       stream,
-                 stream_index: 0 }
+        ByteStream{
+            byte:         0,
+            mark_index:   0,
+            stream:       stream,
+            stream_index: 0
+        }
     }
 }
 
