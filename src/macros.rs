@@ -1309,7 +1309,7 @@ macro_rules! is_hex {
     });
 }
 
-/// Indicates that a byte is not a visible 7-bit character. Space are not considered visible.
+/// Indicates that a byte is not a visible 7-bit character. Space is not considered visible.
 #[macro_export]
 macro_rules! is_not_visible_7bit {
     ($byte:expr) => ({
@@ -1317,7 +1317,7 @@ macro_rules! is_not_visible_7bit {
     })
 }
 
-/// Indicates that a byte is not a visible 8-bit character. Space not considered visible.
+/// Indicates that a byte is not a visible 8-bit character. Space is not considered visible.
 #[macro_export]
 macro_rules! is_not_visible_8bit {
     ($byte:expr) => ({

@@ -37,7 +37,7 @@ pub struct ByteStream<'a> {
     /// Current byte.
     pub byte: u8,
 
-    /// Callback mark index.
+    /// Mark index.
     pub mark_index: usize,
 
     /// Stream data.
